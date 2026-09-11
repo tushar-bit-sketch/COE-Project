@@ -1,0 +1,35 @@
+{
+  "name": "sentinel-x-platform",
+  "version": "5.0.0",
+  "private": true,
+  "description": "SENTINEL-X V2 · Autonomous Surveillance Intelligence Platform",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"cyan,green\" \"npm run dev -w apps/server\" \"npm run dev -w apps/web\"",
+    "dev:server": "npm run dev -w apps/server",
+    "dev:web": "npm run dev -w apps/web",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:generate": "npm run db:generate -w apps/server",
+    "db:seed": "npm run db:seed -w apps/server",
+    "db:push": "npm run db:push -w apps/server"
+  },
+  "keywords": [
+    "surveillance",
+    "computer-vision",
+    "kalman-filter",
+    "target-tracking",
+    "sentinel-x"
+  ],
+  "author": "SENTINEL-X Core Team",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  }
+}

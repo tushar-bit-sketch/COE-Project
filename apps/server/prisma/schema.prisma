@@ -1,0 +1,122 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String    @id @default(uuid())
+  username     String    @unique
+  passwordHash String
+  role         String    @default("OPERATOR")
+  clearance    String    @default("ALPHA-7")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastLoginAt  DateTime?
+
+  @@index([username])
+}
+
+model CameraSource {
+  id          String            @id @default(uuid())
+  name        String
+  type        String            // SIMULATION, WEBCAM, MJPEG, RTSP_BRIDGE
+  url         String            @default("")
+  status      String            @default("ONLINE") // ONLINE, CONNECTING, OFFLINE, ERROR
+  enabled     Boolean           @default(true)
+  resolution  String            @default("1280x720")
+  fps         Int               @default(30)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  sessions    TrackingSession[]
+
+  @@index([status])
+  @@index([type])
+}
+
+model TrackingSession {
+  id        String       @id @default(uuid())
+  sourceId  String
+  source    CameraSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  startedAt DateTime     @default(now())
+  endedAt   DateTime?
+  status    String       @default("ACTIVE") // ACTIVE, COMPLETED, TERMINATED
+  targets   Target[]
+
+  @@index([sourceId])
+  @@index([status])
+}
+
+model Target {
+  id              String              @id @default(uuid())
+  sessionId       String
+  session         TrackingSession     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  externalTrackId Int                 // e.g. 17 for TGT-017
+  label           String              // e.g. "TGT-017"
+  state           String              @default("DETECTED") // DETECTED, TRACKING, LOCKED, OCCLUDED, PREDICTED, REACQUIRED, ANOMALY, LOST
+  confidence      Float               @default(0.9)
+  firstDetectedAt DateTime            @default(now())
+  lastDetectedAt  DateTime            @default(now())
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  observations    TargetObservation[]
+  anomalies       AnomalyEvent[]
+
+  @@index([sessionId])
+  @@index([externalTrackId])
+  @@index([state])
+}
+
+model TargetObservation {
+  id            String   @id @default(uuid())
+  targetId      String
+  target        Target   @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  timestamp     DateTime @default(now())
+  x             Float
+  y             Float
+  width         Float
+  height        Float
+  confidence    Float
+  velocityX     Float    @default(0.0)
+  velocityY     Float    @default(0.0)
+  trackingState String
+
+  @@index([targetId])
+  @@index([timestamp])
+}
+
+model AnomalyEvent {
+  id             String    @id @default(uuid())
+  targetId       String
+  target         Target    @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  targetTrackNum Int       @default(0)
+  type           String    // RAPID_MOVEMENT, SUDDEN_DIRECTION_CHANGE, RUNNING, UNUSUAL_MOVEMENT, etc.
+  severity       String    @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  confidence     Float     @default(0.85)
+  description    String
+  timestamp      DateTime  @default(now())
+  acknowledged   Boolean   @default(false)
+  acknowledgedBy String?
+  acknowledgedAt DateTime?
+
+  @@index([targetId])
+  @@index([severity])
+  @@index([acknowledged])
+  @@index([timestamp])
+}
+
+model SystemEvent {
+  id        String   @id @default(uuid())
+  type      String   // AUTH, SOURCE, TARGET, SYSTEM, ANOMALY
+  message   String
+  severity  String   @default("INFO") // INFO, WARN, DANGER, OK
+  source    String?
+  timestamp DateTime @default(now())
+
+  @@index([type])
+  @@index([severity])
+  @@index([timestamp])
+}

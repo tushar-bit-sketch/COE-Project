@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #020202;
+  --s1: rgba(255, 255, 255, 0.03);
+  --s2: rgba(255, 255, 255, 0.055);
+  --s3: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hi: rgba(255, 255, 255, 0.16);
+  --text: #f0f4f8;
+  --muted: rgba(200, 210, 225, 0.5);
+  --dim: rgba(200, 210, 225, 0.28);
+  --cyan: #38d9f5;
+  --cyan-dim: rgba(56, 217, 245, 0.12);
+  --green: #34d399;
+  --green-dim: rgba(52, 211, 153, 0.12);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245, 158, 11, 0.12);
+  --red: #f87171;
+  --red-dim: rgba(248, 113, 113, 0.12);
+  --violet: #a78bfa;
+  --violet-dim: rgba(167, 139, 250, 0.12);
+  --r-sm: 14px;
+  --r-md: 20px;
+  --r-lg: 28px;
+  --mono: 'DM Mono', monospace;
+  --sans: 'Space Grotesk', sans-serif;
+  --display: 'Syne', sans-serif;
+  --glass-blur: blur(24px) saturate(1.4);
+  --shadow-card: 0 8px 40px rgba(0, 0, 0, 0.55);
+  --shadow-hover: 0 16px 60px rgba(0, 0, 0, 0.65);
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 256px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 40% at 15% 0%, rgba(56, 217, 245, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 35% at 88% 8%, rgba(167, 139, 250, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 30% at 50% 100%, rgba(52, 211, 153, 0.04) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.015) 2px,
+    rgba(0, 0, 0, 0.015) 4px
+  );
+}
+
+.panel {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.3s, border-color 0.3s, transform 0.3s;
+}
+
+.panel:hover {
+  box-shadow: var(--shadow-hover);
+  border-color: var(--border-hi);
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 60%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Animations */
+@keyframes livepulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(52, 211, 153, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+  }
+}
+
+@keyframes redpulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(248, 113, 113, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(248, 113, 113, 0);
+  }
+}
+
+@keyframes alrtpulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(248, 113, 113, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(248, 113, 113, 0.15);
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+  25% {
+    transform: translate(-3px, 1px);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(3px, -1px);
+    opacity: 1;
+  }
+  75% {
+    transform: translate(-2px, 0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+@keyframes lockcross {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+}
+
+.animate-livepulse {
+  animation: livepulse 2s ease-out infinite;
+}
+
+.animate-redpulse {
+  animation: redpulse 1s ease-out infinite;
+}
+
+.animate-alrtpulse {
+  animation: alrtpulse 1.2s ease-out infinite;
+}
+
+.animate-blink {
+  animation: blink 0.8s infinite;
+}
+
+.animate-glitch {
+  animation: glitch 0.4s steps(2) 3;
+}
